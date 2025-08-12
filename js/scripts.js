@@ -18,21 +18,26 @@ function displayApps(apps) {
   apps.forEach(app => {
     const card = document.createElement('div');
     card.className = 'app-box app-box2';
+
     card.innerHTML = `
       <img class="people-pic" src="${app.icon}" alt="${app.name}">
       <div class="people-info">
         <h2>${app.name}</h2>
         <p><strong>Game Name:</strong> ${app.game}</p>
         <p><strong>Script Tags:</strong> ${app.tags}</p>
-        <button class="download-button" data-url="${app.copylink}">Copy Script</button>
+        <button class="download-button">Copy Script</button>
       </div>
     `;
+
     container.appendChild(card);
+
+    const btn = card.querySelector('.download-button');
+    btn.dataset.url = app.copylink;
   });
 
   container.querySelectorAll('.download-button').forEach(btn => {
     btn.addEventListener('click', function () {
-      const url = this.getAttribute('data-url');
+      const url = this.dataset.url;  
       navigator.clipboard.writeText(url)
         .then(() => {
           this.textContent = "Copied!";
@@ -50,11 +55,8 @@ document.getElementById('search-input').addEventListener('input', function () {
 
   const filtered = allApps.filter(app => {
     const nameMatch = app.name.toLowerCase().includes(query);
-
     const tags = app.tags.split(',').map(tag => tag.trim().toLowerCase());
-
     const tagMatch = tags.some(tag => tag.includes(query));
-
     return nameMatch || tagMatch;
   });
 
