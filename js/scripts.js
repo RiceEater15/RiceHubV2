@@ -22,9 +22,9 @@ function displayApps(apps) {
       <img class="people-pic" src="${app.icon}" alt="${app.name}">
       <div class="people-info">
         <h2>${app.name}</h2>
-        <p><strong>Script Name:</strong> ${app.bundle_id}</p>
-        <p><strong>Script Tags:</strong> ${app.version}</p>
-        <button class="download-button" data-url="${app.download}">Copy Script</button>
+        <p><strong>Game Name:</strong> ${app.game}</p>
+        <p><strong>Script Tags:</strong> ${app.tags}</p>
+        <button class="download-button" data-url="${app.copylink}">Copy Script</button>
       </div>
     `;
     container.appendChild(card);
