@@ -1,9 +1,5 @@
 let allApps = [];
 
-function unescapeFromJSON(str) {
-  return str.replace(/\\"/g, '"');
-}
-
 fetch('json/scripts.json')
   .then(res => res.json())
   .then(apps => {
@@ -36,7 +32,7 @@ function displayApps(apps) {
 
   container.querySelectorAll('.download-button').forEach(btn => {
     btn.addEventListener('click', function () {
-      const url = unescapeFromJSON(this.getAttribute('data-url'));
+      const url = this.getAttribute('data-url');
       navigator.clipboard.writeText(url)
         .then(() => {
           this.textContent = "Copied!";
@@ -51,6 +47,16 @@ function displayApps(apps) {
 
 document.getElementById('search-input').addEventListener('input', function () {
   const query = this.value.toLowerCase();
-  const filtered = allApps.filter(app => app.name.toLowerCase().includes(query));
+
+  const filtered = allApps.filter(app => {
+    const nameMatch = app.name.toLowerCase().includes(query);
+
+    const tags = app.tags.split(',').map(tag => tag.trim().toLowerCase());
+
+    const tagMatch = tags.some(tag => tag.includes(query));
+
+    return nameMatch || tagMatch;
+  });
+
   displayApps(filtered);
 });
