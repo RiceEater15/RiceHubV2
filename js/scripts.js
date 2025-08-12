@@ -1,5 +1,9 @@
 let allApps = [];
 
+function unescapeFromJSON(str) {
+  return str.replace(/\\"/g, '"');
+}
+
 fetch('json/scripts.json')
   .then(res => res.json())
   .then(apps => {
@@ -32,7 +36,7 @@ function displayApps(apps) {
 
   container.querySelectorAll('.download-button').forEach(btn => {
     btn.addEventListener('click', function () {
-      const url = this.getAttribute('data-url');
+      const url = unescapeFromJSON(this.getAttribute('data-url'));
       navigator.clipboard.writeText(url)
         .then(() => {
           this.textContent = "Copied!";
