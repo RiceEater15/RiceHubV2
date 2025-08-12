@@ -5,5 +5,13 @@
     "tags": "Ricehub, Universal, Roblox, Script, MVDS, Murder Vs Sheriff, Arsenal",
     "icon": "Other/Logo.jpeg",
     "copylink": "loadstring(game:HttpGet(\"https://github.com/RiceEater15/RiceHub-Script/raw/refs/heads/main/RiceHub.lua\"))()"
+  },
+  {
+    "name": "MVDS Script",
+    "game": "Murder Vs Sherrif Duels",
+    "tags": "mvds, mvds, murder vs sherrif, hub, script",
+    "icon": "Other/Logo.jpeg",
+    "copylink": ""
   }
+    
 ]
