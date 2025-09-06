@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>IPA Signer (Custom)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: #fff;
+      font-family: "Segoe UI", sans-serif;
+      color: #333;
+    }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: start;
+      overflow-y: auto;
+      padding: 20px 10px;
+    }
+    form {
+      background: #f7f7f7;
+      padding: 30px;
+      border-radius: 14px;
+      width: 100%;
+      max-width: 550px;
+      box-shadow: 0 0 25px rgba(150, 150, 150, 0.4);
+      animation: fadeIn 0.6s ease-in-out;
+      margin: auto;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    h1 {
+      font-size: 24px;
+      text-align: center;
+      margin-bottom: 25px;
+      color: #ad0503;
+    }
+    .form-section { margin-bottom: 20px; }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      font-size: 14px;
+      color: #333;
+    }
+    input[type="file"],
+    input[type="password"],
+    select {
+      width: 100%;
+      padding: 10px;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #333;
+      margin-bottom: 14px;
+    }
+    .drop-zone {
+      background: #fff;
+      border: 2px dashed #bbb;
+      padding: 25px;
+      border-radius: 10px;
+      text-align: center;
+      color: #111;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 18px;
+      transition: all 0.3s ease;
+    }
+    .drop-zone.dragover {
+      border-color: #ad0503;
+      background: #f2f2f2;
+      color: #ad0503;
+    }
+    .radio-group {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 12px;
+    }
+    .radio-group label {
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .radio-group input[type="radio"] {
+      margin-right: 8px;
+      accent-color: #ad0503;
+    }
+    button,
+    .link-btn {
+      width: 100%;
+      padding: 12px;
+      font-size: 15px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+      text-align: center;
+      display: inline-block;
+      text-decoration: none;
+    }
+    button {
+      background: linear-gradient(135deg, #ad0503, #ff4f4f);
+      color: white;
+    }
+    button:hover {
+      box-shadow: 0 0 15px rgba(173, 5, 3, 0.6);
+      transform: translateY(-1px);
+    }
+    .link-btn {
+      background: linear-gradient(135deg, #007aff, #00c3ff);
+      color: white;
+    }
+    .link-btn:last-of-type {
+      background: linear-gradient(135deg, #ff9800, #ff5722);
+    }
+    .link-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 15px rgba(173, 5, 3, 0.4);
+    }
+    #loader {
+      text-align: center;
+      display: none;
+      margin-top: 12px;
+      font-size: 14px;
+    }
+    #progressBar {
+      width: 100%;
+      background: #ddd;
+      border-radius: 6px;
+      height: 8px;
+      margin-top: 14px;
+      display: none;
+    }
+    #progressBar div {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, #ad0503, #ff4f4f);
+      border-radius: 5px;
+      transition: width 0.4s ease;
+    }
+    .result-btns {
+      display: none;
+      margin-top: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <form id="uploadForm" enctype="multipart/form-data">
+    <h1>IPA Signer</h1>
+
+    <div class="form-section">
+      <div class="drop-zone" id="dropZone">📥 Click here to Upload IPA</div>
+      <input type="file" name="ipa_file" id="ipa_file" accept=".ipa" required style="display: none;" />
+    </div>
+
+    <div class="form-section">
+      <label>🔐 Choose Certificate Mode:</label>
+      <div class="radio-group">
+        <label><input type="radio" name="cert_mode" value="server" checked> Use Server Certificate</label>
+        <label><input type="radio" name="cert_mode" value="manual"> Upload Certificate</label>
+      </div>
+    </div>
+
+    <div class="form-section" id="serverCertSection">
+      <label for="use_server_cert">📁 Select from Server</label>
+      <select name="use_server_cert" id="use_server_cert">
+        <option value="">-- Select Certificate --</option>
+        <option value="✅Central">✅Central</option>
+        <option value="✅Chiba">✅Chiba</option>
+        <option value="✅Education">✅Education</option>
+        <option value="✅Global Take">✅Global Take</option>
+      </select>
+    </div>
+
+    <div class="form-section" id="manualCertSection" style="display: none;">
+      <label for="p12_file">📦 Upload .p12</label>
+      <input type="file" name="p12_file" id="p12_file" accept=".p12">
+      <label for="mobileprovision_file">📄 Upload .mobileprovision</label>
+      <input type="file" name="mobileprovision_file" id="mobileprovision_file" accept=".mobileprovision">
+      <label for="password">🔑 Certificate Password</label>
+      <input type="password" name="password" id="password" placeholder="Enter password">
+    </div>
+
+    <button type="submit" id="submitBtn">🚀 Sign IPA</button>
+
+    <div id="loader">⏳ Signing in progress...</div>
+    <div id="progressBar"><div></div></div>
+
+    <div class="result-btns" id="resultBtns">
+      <a id="installLink" href="#" class="link-btn" target="_blank">📲 Install IPA</a>
+      <a id="downloadLink" href="#" class="link-btn" target="_blank">⬇️ Download IPA</a>
+      <button type="button" onclick="location.reload()" class="link-btn">🔁 Upload Another IPA</button>
+    </div>
+  </form>
+
+  <script>
+    const dropZone = document.getElementById("dropZone");
+    const ipaInput = document.getElementById("ipa_file");
+    const certRadios = document.querySelectorAll("input[name='cert_mode']");
+    const serverCert = document.getElementById("serverCertSection");
+    const manualCert = document.getElementById("manualCertSection");
+
+    certRadios.forEach((radio) => {
+      radio.addEventListener("change", () => {
+        serverCert.style.display = radio.value === "server" ? "block" : "none";
+        manualCert.style.display = radio.value === "manual" ? "block" : "none";
+      });
+    });
+
+    dropZone.addEventListener("click", () => ipaInput.click());
+    dropZone.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      dropZone.classList.add("dragover");
+    });
+    dropZone.addEventListener("dragleave", () => {
+      dropZone.classList.remove("dragover");
+    });
+    dropZone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      dropZone.classList.remove("dragover");
+      const files = e.dataTransfer.files;
+      if (files.length) {
+        ipaInput.files = files;
+        dropZone.textContent = "📦 " + files[0].name;
+      }
+    });
+    ipaInput.addEventListener("change", () => {
+      if (ipaInput.files.length) {
+        dropZone.textContent = "📦 " + ipaInput.files[0].name;
+      }
+    });
+
+    document.getElementById("uploadForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const submitBtn = document.getElementById("submitBtn");
+      const loader = document.getElementById("loader");
+      const progressBar = document.getElementById("progressBar");
+      const progressFill = progressBar.querySelector("div");
+
+      const ipaFile = ipaInput.files[0];
+      if (ipaFile && ipaFile.size > 3072 * 1024 * 1024) {
+        alert("❌ IPA too large! Max 3GB.");
+        return;
+      }
+
+      submitBtn.style.display = "none";
+      loader.style.display = "block";
+      progressBar.style.display = "block";
+      progressFill.style.width = "0";
+
+      const formData = new FormData(this);
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", "https://applejr.xyz/upload", true); // ✅ changed to their server
+
+      xhr.upload.addEventListener("progress", function (event) {
+        if (event.lengthComputable) {
+          const percent = (event.loaded / event.total) * 100;
+          progressFill.style.width = percent + "%";
+        }
+      });
+
+      xhr.onload = function () {
+        loader.style.display = "none";
+        progressBar.style.display = "none";
+        try {
+          const res = JSON.parse(xhr.responseText);
+          if (res.install_url && res.download_url) {
+            document.getElementById("installLink").href = res.install_url;
+            document.getElementById("downloadLink").href = res.download_url;
+            document.getElementById("resultBtns").style.display = "block";
+          } else {
+            alert("❌ Signing failed. Check password or certificate.");
+            submitBtn.style.display = "block";
+          }
+        } catch (err) {
+          alert("❌ Invalid server response.");
+          submitBtn.style.display = "block";
+        }
+      };
+
+      xhr.onerror = function () {
+        alert("❌ Upload failed.");
+        loader.style.display = "none";
+        progressBar.style.display = "none";
+        submitBtn.style.display = "block";
+      };
+
+      xhr.send(formData);
+    });
+  </script>
+</body>
+</html>
