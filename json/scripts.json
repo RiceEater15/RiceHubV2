@@ -19,5 +19,12 @@
     "tags": "esp, run fight hide, fly, auto",
     "icon": "Other/Logo.jpeg",
     "copylink": "loadstring(game:HttpGet(\"https://rawscripts.net/raw/Run-Hide-Fight-ALPHA-Run-Hide-fight-script-50050\"))()"
+  },
+  {
+    "name": "Bedwars Cat Vape",
+    "game": "Bedwars",
+    "tags": "bedwars, script, vape",
+    "icon": "Other/Logo.jpeg",
+    "copylink": "loadstring(game:HttpGet(\"https://raw.githubusercontent.com/new-qwertyui/CatV5/refs/heads/main/init.lua\"), 'init.lua')()"
   }
 ]
