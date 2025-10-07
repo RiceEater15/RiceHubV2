@@ -3,13 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rock That Body - Typing Lyrics</title>
+<title>Rock That Body - Flashing Typing Lyrics</title>
 <style>
   html, body {
     margin: 0;
     padding: 0;
     height: 100%;
-    background: radial-gradient(circle at center, #000010, #000);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -18,6 +17,8 @@
     color: #fff;
     text-align: center;
     overflow: hidden;
+    background-color: black;
+    transition: background-color 0.05s ease;
   }
 
   #lyrics {
@@ -49,43 +50,56 @@
 </style>
 </head>
 <body>
-  <div id="lyrics">“Rock That Body” — Black Eyed Peas</div>
-  <button id="startBtn">🎸 Rock n Roll</button>
+<div id="lyrics">“Rock That Body” — Black Eyed Peas</div>
+<button id="startBtn">🎸 Rock n Roll</button>
 
 <script>
 const lyrics = [
+  // Removed first 2 lines
   { text: "I wanna, I wanna rock right now", time: 0 },
-  { text: "I wanna, I wanna rock right now", time: 3000 },
-  { text: "I wanna, I wanna rock right now", time: 6000 },
-  { text: "I wanna da-, I wanna dance in the lights", time: 9000 },
-  { text: "I wanna ro-, I wanna rock your body", time: 12000 },
-  { text: "I wanna go, I wanna go for a ride", time: 15000 },
-  { text: "Hop in the music and rock your body right", time: 18000 },
+  { text: "I wanna da-, I wanna dance in the lights", time: 3000 },
+  { text: "I wanna ro-, I wanna rock your body", time: 6000 },
+  { text: "I wanna go, I wanna go for a ride", time: 9000 },
+  { text: "Hop in the music and rock your body right", time: 12000 },
+  { text: "Rock that body, come on, come on, rock that body (rock your body)", time: 15000 },
+  { text: "Rock that body, come on, come on, rock that body", time: 18000 },
   { text: "Rock that body, come on, come on, rock that body (rock your body)", time: 21000 },
   { text: "Rock that body, come on, come on, rock that body", time: 24000 },
-  { text: "Rock that body, come on, come on, rock that body (rock your body)", time: 27000 },
-  { text: "Rock that body, come on, come on, rock that body", time: 30000 },
 ];
 
 const lyricDiv = document.getElementById("lyrics");
 const btn = document.getElementById("startBtn");
 
-function typeLine(text, index = 0, callback) {
-  if (index < text.length) {
-    lyricDiv.textContent += text[index];
-    setTimeout(() => typeLine(text, index + 1, callback), 50); // typing speed per letter
-  } else if (callback) {
-    callback();
+function flashBackground() {
+  document.body.style.backgroundColor = "white";
+  setTimeout(() => {
+    document.body.style.backgroundColor = "black";
+  }, 50);
+}
+
+function typeWordByWord(text, callback) {
+  const words = text.split(" ");
+  let i = 0;
+  function nextWord() {
+    if (i < words.length) {
+      lyricDiv.textContent += (i === 0 ? "" : " ") + words[i];
+      flashBackground(); // flash bg every word
+      i++;
+      setTimeout(nextWord, 250); // speed per word
+    } else if (callback) {
+      callback();
+    }
   }
+  nextWord();
 }
 
 function playLyrics() {
   btn.style.display = "none";
   lyricDiv.textContent = "";
-  lyrics.forEach((line, i) => {
+  lyrics.forEach((line) => {
     setTimeout(() => {
       lyricDiv.textContent = "";
-      typeLine(line.text);
+      typeWordByWord(line.text);
     }, line.time);
   });
 
