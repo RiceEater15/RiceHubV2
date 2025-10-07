@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Rock That Body - Lyric Animation</title>
 <style>
-  body {
+  html, body {
     margin: 0;
-    height: 100vh;
+    padding: 0;
+    height: 100%;
     background: radial-gradient(circle at center, #000010, #000);
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    flex-direction: column;
     color: #fff;
     font-family: "Poppins", sans-serif;
     overflow: hidden;
@@ -20,12 +21,15 @@
   }
 
   #lyrics {
-    font-size: 2em;
-    text-shadow: 0 0 10px #00f5ff, 0 0 25px #ff00ff;
+    font-size: 2.2em;
+    text-shadow: 0 0 12px #00f5ff, 0 0 25px #ff00ff;
     opacity: 0;
     transform: scale(0.9);
-    transition: all 0.6s ease;
-    min-height: 3em;
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    min-height: 2.5em; /* keeps the text area fixed height so layout doesn’t jump */
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .show {
@@ -37,12 +41,13 @@
     0%, 100% { background-color: #000010; }
     50% { background-color: #220033; }
   }
+
   body.animate {
     animation: bgPulse 2s infinite;
   }
 
   button {
-    margin-top: 30px;
+    margin-top: 40px;
     background: linear-gradient(45deg, #ff0080, #00e5ff);
     border: none;
     border-radius: 30px;
@@ -53,7 +58,7 @@
     text-transform: uppercase;
     letter-spacing: 2px;
     box-shadow: 0 0 20px #ff00ff80;
-    transition: 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
 
   button:hover {
@@ -64,15 +69,15 @@
   .start {
     position: absolute;
     bottom: 25px;
-    font-size: 1em;
-    color: #ccc;
+    font-size: 0.9em;
+    color: #aaa;
   }
 </style>
 </head>
 <body>
   <div id="lyrics">“Rock That Body” — Black Eyed Peas</div>
   <button id="startBtn">🎸 Rock n Roll</button>
-  <div class="start">Click to start lyric animation</div>
+  <div class="start">Tap the button to start lyric animation</div>
 
 <script>
 const lines = [
@@ -100,13 +105,16 @@ function playLyrics() {
   document.body.classList.add("animate");
   lyricDiv.textContent = "";
 
-  lines.forEach(line => {
+  // Ensure visibility works smoothly on iPad
+  lines.forEach((line) => {
     setTimeout(() => {
       lyricDiv.classList.remove("show");
+      // Force reflow fix for Safari animations
+      void lyricDiv.offsetWidth;
       setTimeout(() => {
         lyricDiv.textContent = line.text;
         lyricDiv.classList.add("show");
-      }, 200);
+      }, 100);
     }, line.time);
   });
 
