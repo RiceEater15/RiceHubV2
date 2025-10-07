@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>HOCO With Me? — Rose → Pink Tree Animation</title>
+<style>
+  :root{
+    --bg:#07040a;
+    --ground:#051018;
+    --pink1:#ffc0df;
+    --pink2:#ff79b0;
+    --leaf:#b8e0c8;
+    --glow: 0 0 20px rgba(255,120,176,0.85), 0 0 60px rgba(255,120,176,0.45);
+  }
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#0a0620 60%);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;}
+  .stage{
+    width:100%;
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    position:relative;
+  }
+
+  /* SVG scales nicely and stays centered */
+  svg{
+    width:min(90vmin,1000px);
+    height:auto;
+    filter:drop-shadow(0 10px 30px rgba(0,0,0,0.6));
+  }
+
+  /* subtle floating for the whole tree for life */
+  .float {
+    animation: float 6s ease-in-out infinite;
+    transform-origin:center;
+  }
+  @keyframes float {
+    0%{transform:translateY(0px) scale(1);}
+    50%{transform:translateY(-6px) scale(1.002);}
+    100%{transform:translateY(0px) scale(1);}
+  }
+
+  /* path (stem & branches) base styles */
+  .stem, .branch {
+    fill:none;
+    stroke:#8fbf9a;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+    stroke-width:4;
+    stroke-dasharray:1000;
+    stroke-dashoffset:1000; /* hidden initially */
+    transition: stroke 0.5s;
+  }
+
+  /* blooming branch glow variant (pink when lit) */
+  .lit {
+    stroke:#ff83b5;
+    stroke-width:5;
+    filter:drop-shadow(0 0 18px rgba(255,120,176,0.6));
+  }
+
+  /* Rose bud / blossom styles */
+  .bud {
+    transform-origin:center;
+    opacity:0;
+    filter:drop-shadow(0 6px 20px rgba(255,120,176,0.2));
+  }
+
+  .bud.show {
+    animation: pop 700ms cubic-bezier(.2,.9,.25,1) forwards;
+  }
+
+  @keyframes pop {
+    0% { transform: translateY(8px) scale(0.6); opacity:0; }
+    60% { transform: translateY(-4px) scale(1.08); opacity:1; }
+    100% { transform: translateY(0) scale(1); opacity:1; }
+  }
+
+  /* Petal glow pulse */
+  .petal {
+    transform-origin:center;
+    transition: transform 200ms ease;
+    mix-blend-mode:screen;
+  }
+  .petal.glow {
+    filter: var(--glow);
+    transform: scale(1.06);
+  }
+
+  /* Text appearance */
+  .hoctext {
+    font-weight:700;
+    font-size:38px;
+    letter-spacing:0.6px;
+    fill:transparent;
+    stroke:rgba(255,255,255,0.12);
+    stroke-width:1;
+    paint-order:stroke;
+    filter: drop-shadow(0 1px 10px rgba(255,120,176,0.35));
+  }
+  .hoctext.show {
+    animation: textGlow 1.8s ease forwards;
+  }
+
+  @keyframes textGlow {
+    0% { fill:transparent; stroke:rgba(255,255,255,0.12); filter: none; opacity:0; }
+    40% { fill:rgba(255,192,223,0.08); opacity:1; stroke:rgba(255,120,176,0.35); filter:drop-shadow(0 0 30px rgba(255,120,176,0.25)); }
+    100% { fill:linear-gradient(#fff,#fff); stroke:rgba(255,120,176,0.6); filter: var(--glow); }
+  }
+
+  /* small shimmer glow behind text */
+  .text-glow {
+    opacity:0;
+    transition:opacity 600ms ease;
+  }
+  .text-glow.show{ opacity:1; filter:var(--glow); }
+
+  /* ground / subtle grass */
+  .ground {
+    fill:linear-gradient(#021, #000);
+    opacity:0.06;
+  }
+
+  /* responsive tweaks */
+  @media (max-width:420px){
+    .hoctext{ font-size:22px; }
+  }
+</style>
+</head>
+<body>
+<div class="stage">
+  <!-- SVG scene -->
+  <svg viewBox="0 0 800 900" xmlns="http://www.w3.org/2000/svg" id="scene" class="float" aria-hidden="true">
+    <defs>
+      <radialGradient id="petalGrad" cx="40%" cy="30%" r="70%">
+        <stop offset="0%" stop-color="#ffd6e8"/>
+        <stop offset="65%" stop-color="#ff9cc7"/>
+        <stop offset="100%" stop-color="#ff6aa6"/>
+      </radialGradient>
+
+      <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="8" result="b"/>
+        <feMerge>
+          <feMergeNode in="b"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+
+    <!-- ground shadow -->
+    <ellipse cx="400" cy="880" rx="260" ry="30" fill="#02121a" opacity="0.45"></ellipse>
+
+    <!-- paths: stem grows then branches -->
+    <!-- main stem -->
+    <path id="stem" class="stem" d="M400 880 C405 740 410 640 390 560 C370 480 360 420 375 360" stroke="#7fb191"/>
+
+    <!-- branches (hidden initially) - multiple branches off the stem -->
+    <path id="b1" class="branch" d="M375 360 C380 320 430 290 480 300" stroke="#7fb191"/>
+    <path id="b2" class="branch" d="M420 430 C455 400 500 390 540 420" stroke="#7fb191"/>
+    <path id="b3" class="branch" d="M360 420 C320 380 250 350 240 300" stroke="#7fb191"/>
+    <path id="b4" class="branch" d="M380 500 C360 460 310 460 270 500" stroke="#7fb191"/>
+    <path id="b5" class="branch" d="M430 550 C470 520 540 520 590 550" stroke="#7fb191"/>
+
+    <!-- blossoms / buds (small groups placed on endpoints) -->
+    <g id="buds" transform="translate(0,0)">
+      <!-- each bud is a group of petals -->
+      <!-- for each bud, we'll toggle .show and .glow classes in JS -->
+      <g id="bud1" class="bud" transform="translate(480,300)">
+        <circle r="8" fill="#ff8bb8" opacity="0.0"></circle>
+        <g class="petalGroup">
+          <path class="petal" d="M0 0 C 8 -6 18 -6 22 0 C 18 6 8 6 0 0 Z" fill="url(#petalGrad)" transform="rotate(0) translate(-10,0)"></path>
+          <path class="petal" d="M0 0 C 8 -6 18 -6 22 0 C 18 6 8 6 0 0 Z" fill="url(#petalGrad)" transform="rotate(72) translate(-10,0)"></path>
+          <path class="petal" d="M0 0 C 8 -6 18 -6 22 0 C 18 6 8 6 0 0 Z" fill="url(#petalGrad)" transform="rotate(144) translate(-10,0)"></path>
+          <path class="petal" d="M0 0 C 8 -6 18 -6 22 0 C 18 6 8 6 0 0 Z" fill="url(#petalGrad)" transform="rotate(216) translate(-10,0)"></path>
+          <path class="petal" d="M0 0 C 8 -6 18 -6 22 0 C 18 6 8 6 0 0 Z" fill="url(#petalGrad)" transform="rotate(288) translate(-10,0)"></path>
+        </g>
+      </g>
+
+      <g id="bud2" class="bud" transform="translate(540,420)">
+        <g class="petalGroup">
+          <path class="petal" d="M0 0 C 6 -5 14 -5 18 0 C 14 5 6 5 0 0 Z" fill="url(#petalGrad)" transform="rotate(0) translate(-8,0)"></path>
+          <path class="petal" d="M0 0 C 6 -5 14 -5 18 0 C 14 5 6 5 0 0 Z" fill="url(#petalGrad)" transform="rotate(90) translate(-8,0)"></path>
+          <path class="petal" d="M0 0 C 6 -5 14 -5 18 0 C 14 5 6 5 0 0 Z" fill="url(#petalGrad)" transform="rotate(180) translate(-8,0)"></path>
+        </g>
+      </g>
+
+      <g id="bud3" class="bud" transform="translate(240,300)">
+        <g class="petalGroup">
+          <path class="petal" d="M0 0 C 8 -6 18 -6 22 0 C 18 6 8 6 0 0 Z" fill="url(#petalGrad)" transform="rotate(30) translate(-10,0)"></path>
+          <path class="petal" d="M0 0 C 8 -6 18 -6 22 0 C 18 6 8 6 0 0 Z" fill="url(#petalGrad)" transform="rotate(150) translate(-10,0)"></path>
+        </g>
+      </g>
+
+      <g id="bud4" class="bud" transform="translate(270,500)">
+        <g class="petalGroup">
+          <path class="petal" d="M0 0 C 7 -5 16 -5 20 0 C 16 5 7 5 0 0 Z" fill="url(#petalGrad)" transform="rotate(0) translate(-9,0)"></path>
+          <path class="petal" d="M0 0 C 7 -5 16 -5 20 0 C 16 5 7 5 0 0 Z" fill="url(#petalGrad)" transform="rotate(90) translate(-9,0)"></path>
+        </g>
+      </g>
+
+      <g id="bud5" class="bud" transform="translate(590,550)">
+        <g class="petalGroup">
+          <path class="petal" d="M0 0 C 8 -6 18 -6 22 0 C 18 6 8 6 0 0 Z" fill="url(#petalGrad)" transform="rotate(0) translate(-10,0)"></path>
+          <path class="petal" d="M0 0 C 8 -6 18 -6 22 0 C 18 6 8 6 0 0 Z" fill="url(#petalGrad)" transform="rotate(72) translate(-10,0)"></path>
+          <path class="petal" d="M0 0 C 8 -6 18 -6 22 0 C 18 6 8 6 0 0 Z" fill="url(#petalGrad)" transform="rotate(144) translate(-10,0)"></path>
+        </g>
+      </g>
+    </g>
+
+    <!-- small glowing flare behind the final text -->
+    <g id="textGlow" class="text-glow" transform="translate(400,200)">
+      <circle r="110" fill="#ff79b0" opacity="0.06" />
+      <circle r="70" fill="#ffb4d8" opacity="0.04" />
+    </g>
+
+    <!-- HOCO text -->
+    <g transform="translate(400,210)" text-anchor="middle">
+      <text id="hoctext" class="hoctext" x="0" y="12">hoco with me?</text>
+    </g>
+
+  </svg>
+</div>
+
+<script>
+/*
+ Animation sequence:
+ 1) Grow stem (stroke-dashoffset -> 0)
+ 2) Light up branches sequentially (change class to lit, animate stroke dash)
+ 3) Pop buds at branch tips with petal glow pulses
+ 4) Show glowing text
+*/
+
+const stem = document.getElementById('stem');
+const branches = ['b1','b2','b3','b4','b5'].map(id => document.getElementById(id));
+const buds = ['bud1','bud2','bud3','bud4','bud5'].map(id => document.getElementById(id));
+const hoctext = document.getElementById('hoctext');
+const textGlow = document.getElementById('textGlow');
+
+function animatePath(pathEl, speed = 1600, delay = 0){
+  // compute path length and animate stroke-dashoffset manually using requestAnimationFrame
+  const len = pathEl.getTotalLength();
+  pathEl.style.strokeDasharray = len;
+  pathEl.style.strokeDashoffset = len;
+  pathEl.getBoundingClientRect(); // force paint
+  const start = performance.now() + delay;
+  return new Promise(resolve => {
+    function frame(t){
+      const dt = t - start;
+      if (dt < 0){ requestAnimationFrame(frame); return; }
+      const progress = Math.min(dt / speed, 1);
+      pathEl.style.strokeDashoffset = Math.max(len * (1 - progress), 0);
+      if (progress < 1) requestAnimationFrame(frame);
+      else resolve();
+    }
+    requestAnimationFrame(frame);
+  });
+}
+
+async function runSequence(){
+  // 1 - grow stem
+  await animatePath(stem, 1200, 200);
+
+  // 2 - sequential branches lighting
+  for (let i=0; i<branches.length; i++){
+    const b = branches[i];
+    // make it pink gradually
+    b.classList.add('lit');
+    // animate the dash growth (slightly quicker)
+    await animatePath(b, 700, 100);
+    // show corresponding bud with a pop
+    const bud = buds[i];
+    setTimeout(() => {
+      bud.classList.add('show');
+      // add glow on petals shortly after
+      const petals = bud.querySelectorAll('.petal');
+      petals.forEach((p, idx) => {
+        setTimeout(()=> p.classList.add('glow'), 140 + idx*60);
+        // pulse off after a bit to create shimmer
+        setTimeout(()=> p.classList.remove('glow'), 1200 + idx*80);
+      });
+    }, 150);
+    // small pause between branches
+    await new Promise(r => setTimeout(r, 220));
+  }
+
+  // 3 - when tree done, final glow and show text
+  setTimeout(() => {
+    textGlow.classList.add('show');
+  }, 400);
+
+  setTimeout(() => {
+    hoctext.classList.add('show');
+    // also give the letters a pulsing glow (tweak using CSS variables)
+    hoctext.style.transition = 'filter 1s ease';
+    hoctext.style.filter = 'var(--glow)';
+  }, 600);
+}
+
+// Kick-off
+runSequence();
+
+// Small interactive tweak: when user clicks the tree, replay animation
+document.getElementById('scene').addEventListener('click', ()=>{
+  // reset classes and dashoffsets
+  [...branches, stem].forEach(p=>{
+    p.style.strokeDashoffset = p.getTotalLength();
+    p.classList.remove('lit');
+  });
+  buds.forEach(b => {
+    b.classList.remove('show');
+    const petals = b.querySelectorAll('.petal');
+    petals.forEach(p => p.classList.remove('glow'));
+  });
+  hoctext.classList.remove('show');
+  textGlow.classList.remove('show');
+  // small delay then replay
+  setTimeout(runSequence, 200);
+});
+</script>
+</body>
+</html>
