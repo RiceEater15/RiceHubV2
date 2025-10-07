@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rock That Body - Flashing Typing Lyrics</title>
+<title>Rock That Body - Timed Typing Lyrics</title>
 <style>
   html, body {
     margin: 0;
@@ -14,10 +14,10 @@
     justify-content: center;
     align-items: center;
     font-family: "Poppins", sans-serif;
-    color: #fff;
+    color: #000;
     text-align: center;
     overflow: hidden;
-    background-color: black;
+    background-color: white;
     transition: background-color 0.05s ease;
   }
 
@@ -50,63 +50,63 @@
 </style>
 </head>
 <body>
+
 <div id="lyrics">“Rock That Body” — Black Eyed Peas</div>
 <button id="startBtn">🎸 Rock n Roll</button>
 
 <script>
-const lyrics = [
-  // Removed first 2 lines
-  { text: "I wanna, I wanna rock right now", time: 0 },
-  { text: "I wanna da-, I wanna dance in the lights", time: 3000 },
-  { text: "I wanna ro-, I wanna rock your body", time: 6000 },
-  { text: "I wanna go, I wanna go for a ride", time: 9000 },
-  { text: "Hop in the music and rock your body right", time: 12000 },
-  { text: "Rock that body, come on, come on, rock that body (rock your body)", time: 15000 },
-  { text: "Rock that body, come on, come on, rock that body", time: 18000 },
-  { text: "Rock that body, come on, come on, rock that body (rock your body)", time: 21000 },
-  { text: "Rock that body, come on, come on, rock that body", time: 24000 },
+// Lyrics array with custom timings in seconds
+const lines = [
+  { text: "I wanna da-", time: 0.06 },
+  { text: "I wanna dance in the lights", time: 0.05 },
+  { text: "I wanna ro-", time: 8.07 },
+  { text: "I wanna rock your body", time: 6.08 },
+  { text: "I wanna go", time: 0.08 },
+  { text: "I wanna go for a ride", time: 0.068 },
+  { text: "Hop in the music and", time: 0.07 },
+  { text: "Rock your body", time: 6.08 },
+  { text: "Rock that body", time: 0.069 },
+  { text: "come on, come on", time: 0.035 },
+  { text: "Rock that body", time: 8.05 },
+  { text: "(Rock your body)", time: 0.03 },
+  { text: "Rock that body", time: 0.049 },
+  { text: "come on, come on", time: 0.035 },
+  { text: "Rock that body", time: 8.68 },
 ];
 
 const lyricDiv = document.getElementById("lyrics");
 const btn = document.getElementById("startBtn");
 
-function flashBackground() {
-  document.body.style.backgroundColor = "white";
-  setTimeout(() => {
-    document.body.style.backgroundColor = "black";
-  }, 50);
-}
-
-function typeWordByWord(text, callback) {
-  const words = text.split(" ");
-  let i = 0;
-  function nextWord() {
-    if (i < words.length) {
-      lyricDiv.textContent += (i === 0 ? "" : " ") + words[i];
-      flashBackground(); // flash bg every word
-      i++;
-      setTimeout(nextWord, 250); // speed per word
-    } else if (callback) {
-      callback();
+function typeLine(line) {
+  return new Promise(resolve => {
+    const words = line.text.split(" ");
+    let i = 0;
+    function nextWord() {
+      if (i < words.length) {
+        lyricDiv.textContent += (i === 0 ? "" : " ") + words[i];
+        // Flash background white->gray for each word
+        document.body.style.backgroundColor = "#ccc";
+        setTimeout(() => { document.body.style.backgroundColor = "white"; }, 50);
+        i++;
+        setTimeout(nextWord, 150); // typing speed per word
+      } else {
+        resolve();
+      }
     }
-  }
-  nextWord();
+    nextWord();
+  });
 }
 
-function playLyrics() {
+async function playLyrics() {
   btn.style.display = "none";
   lyricDiv.textContent = "";
-  lyrics.forEach((line) => {
-    setTimeout(() => {
-      lyricDiv.textContent = "";
-      typeWordByWord(line.text);
-    }, line.time);
-  });
-
-  setTimeout(() => {
-    lyricDiv.textContent = "🎶 The End 🎶";
-    btn.style.display = "block";
-  }, lyrics[lyrics.length - 1].time + 5000);
+  for (let line of lines) {
+    await new Promise(r => setTimeout(r, line.time * 1000)); // wait line.time seconds
+    await typeLine(line);
+    lyricDiv.textContent += "\n"; // new line after each lyric
+  }
+  lyricDiv.textContent += "\n🎶 The End 🎶";
+  btn.style.display = "block";
 }
 
 btn.addEventListener("click", playLyrics);
