@@ -1,243 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>HOCO With Me?</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lyric Animation</title>
 <style>
-:root {
-  --bg1: #050010;
-  --bg2: #0a0120;
-  --bg3: #140028;
-  --glow-pink: rgba(255,150,210,0.9);
-  --tree-pink: #ff8ac5;
-  --tree-green: #7fbf94;
-}
-body {
-  margin: 0;
-  height: 100vh;
-  background: radial-gradient(circle at 50% 30%, var(--bg3), var(--bg1));
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-}
-
-/* ===== STARRY BACKGROUND ===== */
-canvas#stars {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%;
-  height: 100%;
-  background: transparent;
-  z-index: 1;
-}
-
-/* ===== MAIN SCENE ===== */
-svg {
-  width: min(90vmin, 1000px);
-  height: auto;
-  z-index: 2;
-  filter: drop-shadow(0 8px 30px rgba(0,0,0,0.7));
-}
-
-/* Tree drawing */
-.stem, .branch {
-  fill: none;
-  stroke: var(--tree-green);
-  stroke-width: 5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-dasharray: 1000;
-  stroke-dashoffset: 1000;
-  transition: stroke 1s;
-}
-.lit {
-  stroke: var(--tree-pink);
-  filter: drop-shadow(0 0 12px var(--glow-pink));
-}
-
-/* Petals */
-.bud {
-  opacity: 0;
-  transform-origin: center;
-}
-.bud.show {
-  animation: bloom 1s ease forwards;
-}
-@keyframes bloom {
-  0% { opacity: 0; transform: scale(0.2) translateY(10px); }
-  70% { opacity: 1; transform: scale(1.1) translateY(-3px); }
-  100% { opacity: 1; transform: scale(1) translateY(0); }
-}
-.petal {
-  fill: url(#petalGrad);
-  opacity: 0.9;
-  transform-origin: center;
-}
-.petal.glow {
-  filter: drop-shadow(0 0 10px var(--glow-pink));
-  transform: scale(1.1);
-}
-
-/* Floating glow */
-@keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-4px); }
-  100% { transform: translateY(0px); }
-}
-.float { animation: float 5s ease-in-out infinite; }
-
-/* ===== CURVED TEXT ===== */
-textPath {
-  font-family: 'Segoe UI', sans-serif;
-  font-weight: 700;
-  fill: none;
-  stroke: white;
-  stroke-width: 1;
-  paint-order: stroke fill;
-  font-size: 40px;
-  letter-spacing: 2px;
-  filter: drop-shadow(0 0 12px var(--glow-pink));
-  animation: shine 4s ease-in-out infinite;
-}
-@keyframes shine {
-  0%,100% { fill: #ffbde2; }
-  50% { fill: #fff; filter: drop-shadow(0 0 25px var(--glow-pink)); }
-}
-@media (max-width:600px){
-  textPath { font-size: 24px; }
-}
-
+  body {
+    background: linear-gradient(135deg, #0b0b2a, #1a0033);
+    color: white;
+    font-family: "Poppins", sans-serif;
+    text-align: center;
+    overflow: hidden;
+    height: 100vh;
+    margin: 0;
+  }
+  h1 {
+    margin-top: 40px;
+    color: #ff66cc;
+    text-shadow: 0 0 20px #ff66cc;
+  }
+  #lyrics {
+    font-size: 2em;
+    margin-top: 25vh;
+    opacity: 0;
+    transition: opacity 0.5s, transform 0.5s;
+  }
+  #lyrics.show {
+    opacity: 1;
+    transform: scale(1.1);
+    text-shadow: 0 0 20px #ff99ff, 0 0 40px #00ccff;
+  }
+  audio {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
 </style>
 </head>
 <body>
-<canvas id="stars"></canvas>
+  <h1>🎶 Lyric Animation Demo 🎶</h1>
+  <div id="lyrics">Press play to start</div>
 
-<svg viewBox="0 0 800 900" xmlns="http://www.w3.org/2000/svg" id="scene" class="float">
-  <defs>
-    <radialGradient id="petalGrad" cx="40%" cy="30%" r="70%">
-      <stop offset="0%" stop-color="#ffd6e8"/>
-      <stop offset="60%" stop-color="#ff9cc7"/>
-      <stop offset="100%" stop-color="#ff6aa6"/>
-    </radialGradient>
-  </defs>
-
-  <!-- Tree base -->
-  <path id="stem" class="stem" d="M400 870 C410 740 420 640 400 560 C380 480 370 420 380 360" />
-
-  <!-- Branches -->
-  <path id="b1" class="branch" d="M380 360 C400 320 460 280 520 300" />
-  <path id="b2" class="branch" d="M420 420 C460 390 520 400 560 440" />
-  <path id="b3" class="branch" d="M370 430 C330 400 260 350 240 300" />
-  <path id="b4" class="branch" d="M400 520 C360 470 300 460 260 490" />
-  <path id="b5" class="branch" d="M440 540 C480 510 550 510 600 540" />
-
-  <!-- Buds with multiple petals -->
-  <g id="buds">
-    <g class="bud" id="bud1" transform="translate(520,300)">
-      <circle class="petal" r="8"></circle>
-      <circle class="petal" r="12" opacity="0.5"></circle>
-    </g>
-    <g class="bud" id="bud2" transform="translate(560,440)">
-      <circle class="petal" r="10"></circle>
-      <circle class="petal" r="14" opacity="0.6"></circle>
-    </g>
-    <g class="bud" id="bud3" transform="translate(240,300)">
-      <circle class="petal" r="9"></circle>
-      <circle class="petal" r="12" opacity="0.5"></circle>
-    </g>
-    <g class="bud" id="bud4" transform="translate(260,490)">
-      <circle class="petal" r="8"></circle>
-      <circle class="petal" r="10" opacity="0.6"></circle>
-    </g>
-    <g class="bud" id="bud5" transform="translate(600,540)">
-      <circle class="petal" r="11"></circle>
-      <circle class="petal" r="14" opacity="0.6"></circle>
-    </g>
-  </g>
-
-  <!-- Curved text path -->
-  <path id="curve" d="M150 200 Q400 80 650 200" fill="transparent" />
-  <text>
-    <textPath href="#curve" startOffset="50%" text-anchor="middle">
-      hoco with me?
-    </textPath>
-  </text>
-</svg>
+  <audio id="song" controls>
+    <!-- Replace with your own MP3 URL or upload path -->
+    <source src="song.mp3" type="audio/mpeg">
+  </audio>
 
 <script>
-// ===== STAR BACKGROUND =====
-const canvas = document.getElementById('stars');
-const ctx = canvas.getContext('2d');
-function resize(){ canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-window.addEventListener('resize', resize);
-resize();
-let stars = [];
-for (let i=0;i<150;i++){
-  stars.push({
-    x: Math.random()*canvas.width,
-    y: Math.random()*canvas.height,
-    r: Math.random()*1.5,
-    o: Math.random(),
-    s: Math.random()*0.5+0.2
-  });
-}
-function drawStars(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  for(let s of stars){
-    s.o += 0.02;
-    let twinkle = Math.sin(s.o)*0.5+0.5;
-    ctx.beginPath();
-    ctx.arc(s.x,s.y,s.r*twinkle,0,2*Math.PI);
-    ctx.fillStyle = `rgba(255,200,255,${0.7*twinkle})`;
-    ctx.fill();
+const lyrics = [
+  { time: 2, text: "Don't be so quick to walk away" },
+  { time: 7, text: "Dance with me" },
+  { time: 11, text: "I wanna rock your body" },
+  { time: 16, text: "Please stay" },
+  { time: 21, text: "Dance with me 🎵" }
+];
+
+const audio = document.getElementById('song');
+const lyricBox = document.getElementById('lyrics');
+
+let index = 0;
+
+audio.addEventListener('timeupdate', () => {
+  if (index < lyrics.length && audio.currentTime >= lyrics[index].time) {
+    lyricBox.textContent = lyrics[index].text;
+    lyricBox.classList.add('show');
+    setTimeout(() => lyricBox.classList.remove('show'), 1800);
+    index++;
   }
-  requestAnimationFrame(drawStars);
-}
-drawStars();
+});
 
-// ===== TREE ANIMATION =====
-function animatePath(path, duration, delay=0){
-  const len = path.getTotalLength();
-  path.style.strokeDasharray = len;
-  path.style.strokeDashoffset = len;
-  const start = performance.now() + delay;
-  return new Promise(resolve=>{
-    function frame(t){
-      const progress = Math.min((t-start)/duration,1);
-      path.style.strokeDashoffset = len*(1-progress);
-      if(progress<1) requestAnimationFrame(frame);
-      else resolve();
-    }
-    requestAnimationFrame(frame);
-  });
-}
-
-async function growTree(){
-  const stem = document.getElementById('stem');
-  const branches = ['b1','b2','b3','b4','b5'].map(id=>document.getElementById(id));
-  const buds = ['bud1','bud2','bud3','bud4','bud5'].map(id=>document.getElementById(id));
-
-  await animatePath(stem, 1500);
-  for(let i=0;i<branches.length;i++){
-    const b = branches[i];
-    b.classList.add('lit');
-    await animatePath(b,800);
-    const bud = buds[i];
-    setTimeout(()=>{
-      bud.classList.add('show');
-      const petals = bud.querySelectorAll('.petal');
-      petals.forEach((p,idx)=>{
-        setTimeout(()=>p.classList.add('glow'),idx*100);
-        setTimeout(()=>p.classList.remove('glow'),1000+idx*100);
-      });
-    },300);
-    await new Promise(r=>setTimeout(r,200));
-  }
-}
-growTree();
+audio.addEventListener('ended', () => {
+  index = 0;
+  lyricBox.textContent = "Song ended 🎧";
+});
 </script>
 </body>
 </html>
