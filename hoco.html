@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rock That Body - Lyric Animation</title>
+<title>Rock That Body - Lyrics</title>
 <style>
   html, body {
     margin: 0;
@@ -14,27 +14,26 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    color: #fff;
     font-family: "Poppins", sans-serif;
-    overflow: hidden;
+    color: #fff;
     text-align: center;
+    overflow: hidden;
   }
 
   #lyrics {
-    font-size: 2.2em;
-    text-shadow: 0 0 12px #00f5ff, 0 0 25px #ff00ff;
-    opacity: 0;
-    transform: scale(0.9);
-    transition: opacity 0.6s ease, transform 0.6s ease;
-    min-height: 2.5em; /* keeps the text area fixed height so layout doesn’t jump */
+    font-size: 2em;
+    min-height: 3em;
     display: flex;
     align-items: center;
     justify-content: center;
+    opacity: 1; /* start visible so Safari renders it */
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    transform: scale(0.9);
   }
 
   .show {
-    opacity: 1;
     transform: scale(1);
+    opacity: 1;
   }
 
   @keyframes bgPulse {
@@ -47,18 +46,16 @@
   }
 
   button {
-    margin-top: 40px;
-    background: linear-gradient(45deg, #ff0080, #00e5ff);
+    margin-top: 30px;
+    padding: 12px 28px;
+    font-size: 1.2em;
     border: none;
     border-radius: 30px;
+    background: linear-gradient(45deg,#ff0080,#00e5ff);
     color: #fff;
-    font-size: 1.2em;
-    padding: 12px 28px;
     cursor: pointer;
-    text-transform: uppercase;
-    letter-spacing: 2px;
     box-shadow: 0 0 20px #ff00ff80;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.3s, box-shadow 0.3s;
   }
 
   button:hover {
@@ -69,8 +66,8 @@
   .start {
     position: absolute;
     bottom: 25px;
-    font-size: 0.9em;
     color: #aaa;
+    font-size: 0.9em;
   }
 </style>
 </head>
@@ -80,50 +77,50 @@
   <div class="start">Tap the button to start lyric animation</div>
 
 <script>
-const lines = [
-  { text: "I wanna, I wanna rock right now", time: 1000 },
-  { text: "I wanna, I wanna rock right now", time: 3500 },
+const lyrics = [
+  { text: "I wanna, I wanna rock right now", time: 0 },
+  { text: "I wanna, I wanna rock right now", time: 3000 },
   { text: "I wanna, I wanna rock right now", time: 6000 },
   { text: "I wanna da-, I wanna dance in the lights", time: 9000 },
-  { text: "I wanna ro-, I wanna rock your body", time: 12500 },
-  { text: "I wanna go, I wanna go for a ride", time: 15500 },
-  { text: "Hop in the music and rock your body right", time: 18500 },
-  { text: "Rock that body, come on, come on, rock that body (rock your body)", time: 22000 },
-  { text: "Rock that body, come on, come on, rock that body", time: 25000 },
-  { text: "Rock that body, come on, come on, rock that body (rock your body)", time: 28000 },
-  { text: "Rock that body, come on, come on, rock that body", time: 31000 },
+  { text: "I wanna ro-, I wanna rock your body", time: 12000 },
+  { text: "I wanna go, I wanna go for a ride", time: 15000 },
+  { text: "Hop in the music and rock your body right", time: 18000 },
+  { text: "Rock that body, come on, come on, rock that body (rock your body)", time: 21000 },
+  { text: "Rock that body, come on, come on, rock that body", time: 24000 },
+  { text: "Rock that body, come on, come on, rock that body (rock your body)", time: 27000 },
+  { text: "Rock that body, come on, come on, rock that body", time: 30000 },
 ];
 
 const lyricDiv = document.getElementById("lyrics");
 const btn = document.getElementById("startBtn");
-let started = false;
+let timers = [];
 
 function playLyrics() {
-  if (started) return;
-  started = true;
   btn.style.display = "none";
   document.body.classList.add("animate");
   lyricDiv.textContent = "";
 
-  // Ensure visibility works smoothly on iPad
-  lines.forEach((line) => {
-    setTimeout(() => {
-      lyricDiv.classList.remove("show");
-      // Force reflow fix for Safari animations
-      void lyricDiv.offsetWidth;
+  lyrics.forEach((line, index) => {
+    const timer = setTimeout(() => {
+      lyricDiv.style.opacity = 0;
+      lyricDiv.style.transform = "scale(0.9)";
       setTimeout(() => {
         lyricDiv.textContent = line.text;
-        lyricDiv.classList.add("show");
+        lyricDiv.style.opacity = 1;
+        lyricDiv.style.transform = "scale(1)";
       }, 100);
     }, line.time);
+    timers.push(timer);
   });
 
-  setTimeout(() => {
+  // End animation
+  const endTimer = setTimeout(() => {
     lyricDiv.textContent = "🎶 The End 🎶";
     document.body.classList.remove("animate");
     btn.style.display = "block";
-    started = false;
-  }, lines[lines.length - 1].time + 4000);
+    timers = [];
+  }, lyrics[lyrics.length - 1].time + 4000);
+  timers.push(endTimer);
 }
 
 btn.addEventListener("click", playLyrics);
