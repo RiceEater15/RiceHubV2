@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rock That Body - Lyrics</title>
+<title>Rock That Body - Typing Lyrics</title>
 <style>
   html, body {
     margin: 0;
@@ -26,23 +26,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: 1; /* start visible so Safari renders it */
-    transition: opacity 0.5s ease, transform 0.5s ease;
-    transform: scale(0.9);
-  }
-
-  .show {
-    transform: scale(1);
-    opacity: 1;
-  }
-
-  @keyframes bgPulse {
-    0%, 100% { background-color: #000010; }
-    50% { background-color: #220033; }
-  }
-
-  body.animate {
-    animation: bgPulse 2s infinite;
+    white-space: pre-wrap;
   }
 
   button {
@@ -62,19 +46,11 @@
     transform: scale(1.1);
     box-shadow: 0 0 30px #00f5ff;
   }
-
-  .start {
-    position: absolute;
-    bottom: 25px;
-    color: #aaa;
-    font-size: 0.9em;
-  }
 </style>
 </head>
 <body>
   <div id="lyrics">“Rock That Body” — Black Eyed Peas</div>
   <button id="startBtn">🎸 Rock n Roll</button>
-  <div class="start">Tap the button to start lyric animation</div>
 
 <script>
 const lyrics = [
@@ -93,34 +69,30 @@ const lyrics = [
 
 const lyricDiv = document.getElementById("lyrics");
 const btn = document.getElementById("startBtn");
-let timers = [];
+
+function typeLine(text, index = 0, callback) {
+  if (index < text.length) {
+    lyricDiv.textContent += text[index];
+    setTimeout(() => typeLine(text, index + 1, callback), 50); // typing speed per letter
+  } else if (callback) {
+    callback();
+  }
+}
 
 function playLyrics() {
   btn.style.display = "none";
-  document.body.classList.add("animate");
   lyricDiv.textContent = "";
-
-  lyrics.forEach((line, index) => {
-    const timer = setTimeout(() => {
-      lyricDiv.style.opacity = 0;
-      lyricDiv.style.transform = "scale(0.9)";
-      setTimeout(() => {
-        lyricDiv.textContent = line.text;
-        lyricDiv.style.opacity = 1;
-        lyricDiv.style.transform = "scale(1)";
-      }, 100);
+  lyrics.forEach((line, i) => {
+    setTimeout(() => {
+      lyricDiv.textContent = "";
+      typeLine(line.text);
     }, line.time);
-    timers.push(timer);
   });
 
-  // End animation
-  const endTimer = setTimeout(() => {
+  setTimeout(() => {
     lyricDiv.textContent = "🎶 The End 🎶";
-    document.body.classList.remove("animate");
     btn.style.display = "block";
-    timers = [];
-  }, lyrics[lyrics.length - 1].time + 4000);
-  timers.push(endTimer);
+  }, lyrics[lyrics.length - 1].time + 5000);
 }
 
 btn.addEventListener("click", playLyrics);
