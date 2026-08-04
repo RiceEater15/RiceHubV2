@@ -26,5 +26,12 @@
     "tags": "bedwars, script, vape",
     "icon": "Other/Logo.jpeg",
     "copylink": "loadstring(game:HttpGet(\"https://raw.githubusercontent.com/new-qwertyui/CatV5/refs/heads/main/init.lua\"), 'init.lua')()"
+  },
+  {
+    "name": "Yarhm",
+    "game": "MM2",
+    "tags":"mm2 roblox",
+    "icon":"Other/Logo.jpeg",
+    "copylink":"loadstring(game:HttpGet(\"https://rawscripts.net/raw/Universal-Script-YARHM-12403\"))()"
   }
 ]
