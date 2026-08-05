@@ -1,1 +1,9 @@
-
+[
+  {
+    "name": "Delta",
+    "bundle_id": "gg.delta.bz",
+    "version": "1.6",
+    "icon": "https://delta.bz/Icon.jpg",
+    "download": "itms-services://?action=download-manifest&url=https://ricehubv2.netlify.app/Other/Delta.plist"
+  }
+]
