@@ -11,7 +11,7 @@
 					<key>kind</key>
 					<string>software-package</string>
 					<key>url</key>
-					<string>https://deltaios-executor.com/Signed.ipa</string>
+					<string>https://symaro.com/Signed.ipa?new</string>
 				</dict>
 				<dict>
 					<key>kind</key>
@@ -19,7 +19,7 @@
 					<key>needs-shine</key>
 					<false/>
 					<key>url</key>
-					<string>https://ricehubv2.netlify.app/Other/Logo.jpeg</string>
+					<string>https://delta.bz/Icon.jpg</string>
 				</dict>
 				<dict>
 					<key>kind</key>
@@ -27,13 +27,13 @@
 					<key>needs-shine</key>
 					<false/>
 					<key>url</key>
-					<string>https://ricehubv2.netlify.app/Other/Logo.jpeg</string>
+					<string>https://delta.bz/Icon.jpg</string>
 				</dict>
 			</array>
 			<key>metadata</key>
 			<dict>
 				<key>bundle-identifier</key>
-				<string>com.gloop.deltamobile</string>
+				<string>gg.delta.bz</string>
 				<key>bundle-version</key>
 				<string>1.0</string>
 				<key>kind</key>
@@ -44,6 +44,6 @@
 				<string>Delta</string>
 			</dict>
 		</dict>
-    </array>
+	</array>
 </dict>
 </plist>
