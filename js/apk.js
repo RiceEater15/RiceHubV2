@@ -24,7 +24,7 @@ function displayApps(apps) {
         <h2>${app.name}</h2>
         <p><strong>Bundle ID:</strong> ${app.bundle_id}</p>
         <p><strong>Version:</strong> ${app.version}</p>
-        <a class="download-button" href="${app.download}">Download IPA</a>
+        <a class="download-button" href="${app.download}">Download APK</a>
       </div>
     `;
     container.appendChild(card);
