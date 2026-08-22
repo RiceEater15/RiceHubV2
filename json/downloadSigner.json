@@ -3,7 +3,7 @@
     "name": "Ksign HSBC Bank",
     "bundle_id": "app.ksign.com",
     "version": "1.0",
-    "icon": "https://website.khoindvn.io.vn/img/pf/icon-57.png",
+    "icon": "https://website.khoindvn.io.vn/img/pf/icon-512.png",
     "download": "itms-services://?action=download-manifest&url=https://ricehubv2.netlify.app/OtherPlist/HSBCKsign.plist"
   }
 ]
