@@ -1,6 +1,6 @@
 let allApps = [];
 
-fetch('json/downloads.json')
+fetch('json/downloadSigner.json')
   .then(res => res.json())
   .then(apps => {
     allApps = apps; 
